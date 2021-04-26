@@ -330,6 +330,14 @@
                             (.execute)))
                       (rest batches))))))
 
+
+(defn update-sheet
+  "appends rows to a specific sheet (tab). Appends starting at the last
+   non-blank row.  Breaks down requests into batches of ~10k cells.  Doesn't
+   alter the number of columns on the sheet and so writing more columns than the
+   sheet has will error"
+  [^Sheets service spreadsheet-id sheet-id rows start range]
+  )
 (defn add-sheet
   "returns the 'properties' field of the created sheet"
   [^Sheets service spreadsheet-id sheet-title]

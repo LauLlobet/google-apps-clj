@@ -69,6 +69,17 @@
                        ["c-to-be-overwritten" "d-to-be-overwritten" "e-to-be-overwritten"]
                        [1.0 2.0 3.0]]]
                      data)))))
+        (testing "update-sheet"
+          (let [rows [["C" "D" "E"]]
+                response (update-sheet service @spreadsheet-id @sheet-id rows "new tab!A3" "new tab!A3:C3" )]
+            (is (= 1 (count response)))
+            (is (= @spreadsheet-id (get (first response) "spreadsheetId")))
+            (let [data (get-cell-values service @spreadsheet-id ["new tab!A1:C4"])]
+              (is (= [[["Do" "Re" "Mi"]
+                       [60.0 62.0 64.0]
+                       ["C" "D" "E"]
+                       [1.0 2.0 3.0]]]
+                     data)))))
         (testing "get-sheet-info"
           (let [info (get-sheet-info service @spreadsheet-id @sheet-id)
                 grid (get info "gridProperties")]
