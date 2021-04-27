@@ -331,13 +331,6 @@
                       (rest batches))))))
 
 
-(defn update-sheet
-  "appends rows to a specific sheet (tab). Appends starting at the last
-   non-blank row.  Breaks down requests into batches of ~10k cells.  Doesn't
-   alter the number of columns on the sheet and so writing more columns than the
-   sheet has will error"
-  [^Sheets service spreadsheet-id sheet-id rows start range]
-  )
 (defn add-sheet
   "returns the 'properties' field of the created sheet"
   [^Sheets service spreadsheet-id sheet-title]
@@ -417,3 +410,28 @@
   [^Sheets service spreadsheet-id sheet-ranges]
   (let [tables (get-cells service spreadsheet-id sheet-ranges)]
     (mapv (partial mapv (partial mapv cell->clj)) tables)))
+
+(defn update-sheet
+  " todo document "                                         ; TODO: document
+  [^Sheets service spreadsheet-id sheet-id rows startColumn startRow]
+  (assert (not-empty rows) "Must write at least one row to the sheet")
+  (let [sheet-id (int sheet-id)
+        num-cols (int (count (first rows)))
+        part-size (long (/ 10000 num-cols))
+        batches (partition part-size part-size [] rows)
+        first-batch [(-> (Request.)
+                         (.setUpdateCells (-> (UpdateCellsRequest.)
+                                              (.setStart (-> (GridCoordinate.)
+                                                             (.setSheetId sheet-id)
+                                                             (.setColumnIndex (int startColumn))
+                                                             (.setRowIndex (int startRow))))
+                                              (.setRows (map row->row-data (first batches)))
+                                              (.setFields "userEnteredValue,userEnteredFormat"))))]
+        ]
+    (print range)
+    (-> service
+        (.spreadsheets)
+        (.batchUpdate spreadsheet-id
+                      (-> (BatchUpdateSpreadsheetRequest.) (.setRequests first-batch)))
+        (.execute))
+    ))
