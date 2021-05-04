@@ -428,7 +428,6 @@
                                               (.setRows (map row->row-data (first batches)))
                                               (.setFields "userEnteredValue,userEnteredFormat"))))]
         ]
-    (print range)
     (-> service
         (.spreadsheets)
         (.batchUpdate spreadsheet-id
